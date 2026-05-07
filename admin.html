@@ -3,94 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Admin Panel - FWCB Lazy CWL</title>
+    <title>FWCB - Admin Dashboard</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f8f9fa; margin: 0; }
-        .header-title { text-align: center; color: #1e3c72; margin-bottom: 20px; text-transform: uppercase; }
-        .admin-container { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 20px; }
-        .box { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); flex: 1; min-width: 320px; }
-        h2 { color: #2c3e50; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        input, select, textarea { display: block; width: 100%; margin: 10px 0; padding: 12px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; }
-        button { width: 100%; padding: 12px; border: none; cursor: pointer; font-weight: bold; border-radius: 8px; text-transform: uppercase; transition: 0.3s; color: white; margin-top: 10px;}
-        #submit-btn { background-color: #27ae60; } #submit-btn:hover { background-color: #2ecc71; }
-        #logout-btn { background-color: #7f8c8d; } #login-btn { background-color: #e74c3c; }
-        .checkbox-container { display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
-        .checkbox-container label { display: flex; align-items: center; gap: 5px; font-weight: 600; cursor: pointer; }
-        .clan-list-item { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fdfdfd; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .action-btns { display: flex; gap: 10px; }
-        .edit-btn { background-color: #f39c12; padding: 8px 15px; width: auto; font-size: 12px; }
-        .delete-btn { background-color: #e74c3c; padding: 8px 15px; width: auto; font-size: 12px; }
-        #cancel-edit-btn { background-color: #95a5a6; display: none; }
-        .sortable-item { display: flex; justify-content: space-between; align-items: center; background: #fdfdfd; border: 1px solid #ccc; padding: 10px 15px; margin-bottom: 8px; border-radius: 6px; font-weight: bold; }
-        .sortable-item button { width: auto; margin: 0 2px; padding: 5px 10px; background: #ecf0f1; color: #333; border: 1px solid #ddd; margin-top: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        /* =========================================
+           1. Global Styles & Reset
+        ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f4f7f6; color: #333; }
+        
+        /* =========================================
+           2. Dashboard Navbar
+        ========================================= */
+        .admin-nav {
+            background-color: #1e293b; /* Dark Slate / Admin Vibe */
+            color: #fff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-nav h1 { font-size: 20px; font-weight: 600; letter-spacing: 1px; }
+        #logout-btn { background-color: #ef4444; padding: 8px 16px; border: none; border-radius: 6px; color: white; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        #logout-btn:hover { background-color: #dc2626; }
+
+        /* =========================================
+           3. Layout Containers
+        ========================================= */
+        .dashboard-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: flex; flex-wrap: wrap; gap: 25px; }
+        .card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; flex: 1; min-width: 320px; }
+        
+        .section-header { font-size: 18px; color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; font-weight: 600; }
+
+        /* =========================================
+           4. Form Elements
+        ========================================= */
+        .form-group { margin-bottom: 15px; }
+        label.input-label { display: block; font-size: 13px; color: #64748b; font-weight: 500; margin-bottom: 5px; }
+        input[type="text"], input[type="url"], input[type="number"], input[type="email"], input[type="password"], select, textarea { 
+            width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; background-color: #f8fafc; transition: 0.3s; 
+        }
+        input:focus, select:focus, textarea:focus { border-color: #3b82f6; outline: none; background-color: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        
+        /* =========================================
+           5. Checkbox Grid (FIXED ALIGNMENT)
+        ========================================= */
+        .th-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns -> 2 rows for 8 items */
+            gap: 10px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+        }
+        .th-grid label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: #334155; cursor: pointer; }
+        .th-grid input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #3b82f6; }
+
+        /* =========================================
+           6. Buttons
+        ========================================= */
+        .btn-primary { width: 100%; padding: 14px; border: none; cursor: pointer; font-weight: 600; border-radius: 8px; text-transform: uppercase; transition: 0.3s; color: white; margin-top: 10px; letter-spacing: 0.5px; }
+        #submit-btn { background-color: #10b981; } #submit-btn:hover { background-color: #059669; }
+        #cancel-edit-btn { background-color: #94a3b8; display: none; } #cancel-edit-btn:hover { background-color: #64748b; }
+        #login-btn { background-color: #3b82f6; } #login-btn:hover { background-color: #2563eb; }
+        
+        /* =========================================
+           7. List Items & Actions
+        ========================================= */
+        .list-item { border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 12px; background: #fff; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .list-item:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .item-info h4 { margin: 0 0 5px 0; color: #1e293b; font-size: 16px; }
+        .item-info p { margin: 0; font-size: 13px; color: #64748b; }
+        .action-btns { display: flex; gap: 8px; }
+        .btn-edit { background-color: #f59e0b; color: white; padding: 6px 12px; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .btn-delete { background-color: #ef4444; color: white; padding: 6px 12px; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .btn-edit:hover { background-color: #d97706; } .btn-delete:hover { background-color: #dc2626; }
+
+        /* Sortable Sections */
+        .sort-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 15px; margin-bottom: 8px; border-radius: 6px; font-weight: 600; color: #334155; font-size: 14px; }
+        .sort-actions button { background: #e2e8f0; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-left: 5px; }
+        .sort-actions button:hover:not(:disabled) { background: #cbd5e1; }
+        .sort-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Responsive Fix for Mobile Checkboxes */
+        @media(max-width: 600px) {
+            .th-grid { grid-template-columns: repeat(2, 1fr); } /* On mobile, 2 columns */
+            .dashboard-container { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
-    <h1 class="header-title">Admin Dashboard</h1>
-
-    <div id="login-section" style="max-width: 400px; margin: 0 auto;" class="box">
-        <h2>লগিন করুন</h2>
-        <input type="email" id="email" placeholder="Admin Email">
-        <input type="password" id="password" placeholder="Password">
-        <button id="login-btn">Login</button>
-        <p id="login-error" style="color: red; text-align: center; margin-top: 10px;"></p>
+    <div id="login-section" style="max-width: 400px; margin: 100px auto;" class="card">
+        <h2 class="section-header" style="text-align: center; border: none;">Admin Authorization</h2>
+        <div class="form-group">
+            <label class="input-label">Email Address</label>
+            <input type="email" id="email" placeholder="admin@example.com">
+        </div>
+        <div class="form-group">
+            <label class="input-label">Password</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+        <button id="login-btn" class="btn-primary">Secure Login</button>
+        <p id="login-error" style="color: #ef4444; text-align: center; margin-top: 15px; font-size: 14px; font-weight: 500;"></p>
     </div>
 
-    <div id="admin-section" class="admin-container" style="display: none;">
-        <div class="box" id="form-box">
-            <h2 id="form-title">নতুন ক্ল্যান অ্যাড করুন</h2>
-            <input type="hidden" id="edit-clan-id"> 
-            
-            <input type="text" id="clan-name" placeholder="Clan Name">
-            <input type="text" id="clan-tag" placeholder="Clan Tag (e.g. #YQ8R92L)">
-            <input type="url" id="clan-link" placeholder="Join Link">
-            
-            <select id="cwl-league">
-                <option value="" disabled selected>Select CWL League</option>
-                <option value="Unranked">Unranked</option>
-                <option value="Bronze 3">Bronze 3</option><option value="Bronze 2">Bronze 2</option><option value="Bronze 1">Bronze 1</option>
-                <option value="Silver 3">Silver 3</option><option value="Silver 2">Silver 2</option><option value="Silver 1">Silver 1</option>
-                <option value="Gold 3">Gold 3</option><option value="Gold 2">Gold 2</option><option value="Gold 1">Gold 1</option>
-                <option value="Crystal 3">Crystal 3</option><option value="Crystal 2">Crystal 2</option><option value="Crystal 1">Crystal 1</option>
-                <option value="Master 3">Master 3</option><option value="Master 2">Master 2</option><option value="Master 1">Master 1</option>
-                <option value="Champion 3">Champion 3</option><option value="Champion 2">Champion 2</option><option value="Champion 1">Champion 1</option>
-                <option value="Titan 3">Titan 3</option><option value="Titan 2">Titan 2</option><option value="Titan 1">Titan 1</option>
-                <option value="Legend">Legend</option>
-            </select>
+    <div id="admin-section" style="display: none;">
+        
+        <nav class="admin-nav">
+            <h1>FWCB Dashboard</h1>
+            <button id="logout-btn">Log Out</button>
+        </nav>
 
-            <input type="number" id="max-members" placeholder="Max Members">
-            <textarea id="clan-desc" placeholder="Special Note (e.g. Not more than 41...)" rows="2"></textarea>
+        <div class="dashboard-container">
             
-            <p style="margin: 10px 0 5px 0; font-weight: bold; color: #1e3c72;">Required Town Halls:</p>
-            <div class="checkbox-container">
-                <label><input type="checkbox" value="11" class="th-checkbox"> TH 11</label>
-                <label><input type="checkbox" value="12" class="th-checkbox"> TH 12</label>
-                <label><input type="checkbox" value="13" class="th-checkbox"> TH 13</label>
-                <label><input type="checkbox" value="14" class="th-checkbox"> TH 14</label>
-                <label><input type="checkbox" value="15" class="th-checkbox"> TH 15</label>
-                <label><input type="checkbox" value="16" class="th-checkbox"> TH 16</label>
-                <label><input type="checkbox" value="17" class="th-checkbox"> TH 17</label>
-                <label><input type="checkbox" value="18" class="th-checkbox"> TH 18</label>
+            <div class="card" id="form-box">
+                <h2 class="section-header" id="form-title">Add New Clan</h2>
+                <input type="hidden" id="edit-clan-id"> 
+                
+                <div class="form-group">
+                    <label class="input-label">Clan Name</label>
+                    <input type="text" id="clan-name" placeholder="e.g. FWCB Elite">
+                </div>
+                
+                <div class="form-group">
+                    <label class="input-label">Clan Tag</label>
+                    <input type="text" id="clan-tag" placeholder="e.g. #YQ8R92L">
+                </div>
+                
+                <div class="form-group">
+                    <label class="input-label">Join Link</label>
+                    <input type="url" id="clan-link" placeholder="Discord or In-game Invite Link">
+                </div>
+                
+                <div class="form-group">
+                    <label class="input-label">CWL League</label>
+                    <select id="cwl-league">
+                        <option value="" disabled selected>Select League...</option>
+                        <option value="Unranked">Unranked</option>
+                        <option value="Bronze 3">Bronze 3</option><option value="Bronze 2">Bronze 2</option><option value="Bronze 1">Bronze 1</option>
+                        <option value="Silver 3">Silver 3</option><option value="Silver 2">Silver 2</option><option value="Silver 1">Silver 1</option>
+                        <option value="Gold 3">Gold 3</option><option value="Gold 2">Gold 2</option><option value="Gold 1">Gold 1</option>
+                        <option value="Crystal 3">Crystal 3</option><option value="Crystal 2">Crystal 2</option><option value="Crystal 1">Crystal 1</option>
+                        <option value="Master 3">Master 3</option><option value="Master 2">Master 2</option><option value="Master 1">Master 1</option>
+                        <option value="Champion 3">Champion 3</option><option value="Champion 2">Champion 2</option><option value="Champion 1">Champion 1</option>
+                        <option value="Titan 3">Titan 3</option><option value="Titan 2">Titan 2</option><option value="Titan 1">Titan 1</option>
+                        <option value="Legend">Legend</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="input-label">Max Members</label>
+                    <input type="number" id="max-members" placeholder="e.g. 40">
+                </div>
+
+                <div class="form-group">
+                    <label class="input-label">Special Note / Description (Optional)</label>
+                    <textarea id="clan-desc" placeholder="e.g. Not more than 41 members can join..." rows="2"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="input-label" style="color: #1e293b; font-weight: 600;">Required Town Halls</label>
+                    <div class="th-grid">
+                        <label><input type="checkbox" value="11" class="th-checkbox"> TH 11</label>
+                        <label><input type="checkbox" value="12" class="th-checkbox"> TH 12</label>
+                        <label><input type="checkbox" value="13" class="th-checkbox"> TH 13</label>
+                        <label><input type="checkbox" value="14" class="th-checkbox"> TH 14</label>
+                        <label><input type="checkbox" value="15" class="th-checkbox"> TH 15</label>
+                        <label><input type="checkbox" value="16" class="th-checkbox"> TH 16</label>
+                        <label><input type="checkbox" value="17" class="th-checkbox"> TH 17</label>
+                        <label><input type="checkbox" value="18" class="th-checkbox"> TH 18</label>
+                    </div>
+                </div>
+
+                <button id="submit-btn" class="btn-primary">Save Clan Data</button>
+                <button id="cancel-edit-btn" class="btn-primary">Cancel Editing</button>
+                <p id="success-msg" style="color: #10b981; font-weight: 600; text-align: center; margin-top: 15px; font-size: 14px;"></p>
             </div>
 
-            <button id="submit-btn">Add Clan</button>
-            <button id="cancel-edit-btn">Cancel Edit</button>
-            <p id="success-msg" style="color: green; font-weight: bold; text-align: center; margin-top: 15px;"></p>
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-            <button id="logout-btn">Logout</button>
-        </div>
+            <div style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 25px;">
+                
+                <div class="card">
+                    <h2 class="section-header">Manage Active Clans (<span id="total-clans">0</span>)</h2>
+                    <div id="admin-clan-list">
+                        <p style="text-align: center; color: #94a3b8; font-size: 14px;">Loading data...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="section-header">Section Layout Order</h2>
+                    <p style="font-size: 12px; color: #64748b; margin-bottom: 15px;">Use the arrows to define the display order of the Town Hall sections on the live website.</p>
+                    <div id="sortable-sections"></div>
+                    <button id="save-order-btn" class="btn-primary" style="background-color: #3b82f6;">Update Layout Order</button>
+                    <p id="order-success-msg" style="color: #10b981; font-weight: 600; text-align: center; margin-top: 10px; font-size: 14px;"></p>
+                </div>
 
-        <div style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 20px;">
-            <div class="box">
-                <h2>Manage Clans (<span id="total-clans">0</span>)</h2>
-                <div id="admin-clan-list"></div>
-            </div>
-            <div class="box">
-                <h2>সেকশন সিরিয়াল করুন</h2>
-                <div id="sortable-sections"></div>
-                <button id="save-order-btn" style="background-color: #3498db;">Save Serial Order</button>
-                <p id="order-success-msg" style="color: green; font-weight: bold; text-align: center; margin-top: 10px;"></p>
             </div>
         </div>
     </div>
@@ -112,48 +225,58 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
       const auth = getAuth(app);
-      let allClansData = {}; // মেমোরিতে ডেটা সেভ রাখার জন্য
+      let allClansData = {}; 
       let currentOrder = [];
 
+      // Authentication State
       onAuthStateChanged(auth, (user) => {
         document.getElementById('login-section').style.display = user ? 'none' : 'block';
-        document.getElementById('admin-section').style.display = user ? 'flex' : 'none';
+        document.getElementById('admin-section').style.display = user ? 'block' : 'none';
         if(user) fetchAdminClans();
       });
 
+      // Login/Logout Events
       document.getElementById('login-btn').addEventListener('click', () => {
-        signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => document.getElementById('login-error').innerText = "ভুল ইমেইল বা পাসওয়ার্ড!");
+        signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
+            .catch(() => document.getElementById('login-error').innerText = "Access Denied: Invalid Email or Password!");
       });
       document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
+      // Fetch Clans
       async function fetchAdminClans() {
           const listContainer = document.getElementById('admin-clan-list');
-          listContainer.innerHTML = 'Loading...';
+          listContainer.innerHTML = '<p style="text-align: center; color: #94a3b8; font-size: 14px;">Fetching data...</p>';
           allClansData = {};
           const groupsSet = new Set();
           try {
               const querySnapshot = await getDocs(collection(db, "clans"));
               listContainer.innerHTML = '';
               document.getElementById('total-clans').innerText = querySnapshot.size;
+              
+              if(querySnapshot.empty) {
+                  listContainer.innerHTML = '<p style="text-align: center; color: #94a3b8; font-size: 14px;">No clans found in database.</p>';
+              }
+
               querySnapshot.forEach((docSnap) => {
                   const clan = docSnap.data();
                   const clanId = docSnap.id;
-                  allClansData[clanId] = clan; // আইডি দিয়ে ডেটা স্টোর করা হচ্ছে
+                  allClansData[clanId] = clan; 
+                  
                   let thArr = Array.isArray(clan.th) ? clan.th : [clan.th];
                   thArr.sort((a, b) => a - b);
                   const groupKey = thArr.join(', ');
                   groupsSet.add(groupKey);
 
                   const div = document.createElement('div');
-                  div.className = 'clan-list-item';
+                  div.className = 'list-item';
                   div.innerHTML = `
-                      <div class="clan-info">
+                      <div class="item-info">
                           <h4>${clan.name}</h4>
-                          <p>TH: ${groupKey} | League: ${clan.league}</p>
+                          <p>TH: ${groupKey} &nbsp;|&nbsp; League: ${clan.league}</p>
                       </div>
                       <div class="action-btns">
-                          <button class="edit-btn" data-id="${clanId}">Edit</button>
-                          <button class="delete-btn" data-id="${clanId}">Delete</button>
+                          <button class="btn-edit" data-id="${clanId}">Edit</button>
+                          <button class="btn-delete" data-id="${clanId}">Delete</button>
                       </div>
                   `;
                   listContainer.appendChild(div);
@@ -163,29 +286,35 @@
           } catch (e) { console.error(e); }
       }
 
+      // Button Actions (Edit / Delete)
       function attachActionListeners() {
-          document.querySelectorAll('.edit-btn').forEach(btn => {
+          document.querySelectorAll('.btn-edit').forEach(btn => {
               btn.addEventListener('click', (e) => {
                   const id = e.target.getAttribute('data-id');
                   const clan = allClansData[id];
-                  document.getElementById('form-title').innerText = "ক্ল্যান আপডেট করুন";
-                  document.getElementById('submit-btn').innerText = "Update Clan";
+                  
+                  document.getElementById('form-title').innerText = "Update Clan Information";
+                  document.getElementById('submit-btn').innerText = "Update Data";
                   document.getElementById('cancel-edit-btn').style.display = "block";
                   document.getElementById('edit-clan-id').value = id;
+                  
                   document.getElementById('clan-name').value = clan.name;
                   document.getElementById('clan-tag').value = clan.tag || '';
                   document.getElementById('clan-link').value = clan.link;
                   document.getElementById('cwl-league').value = clan.league;
                   document.getElementById('max-members').value = clan.members !== "N/A" ? clan.members : '';
                   document.getElementById('clan-desc').value = clan.description || '';
+                  
                   const thArr = Array.isArray(clan.th) ? clan.th : [clan.th];
                   document.querySelectorAll('.th-checkbox').forEach(cb => { cb.checked = thArr.includes(parseInt(cb.value)); });
+                  
                   window.scrollTo({ top: 0, behavior: 'smooth' });
               });
           });
-          document.querySelectorAll('.delete-btn').forEach(btn => {
+
+          document.querySelectorAll('.btn-delete').forEach(btn => {
               btn.addEventListener('click', async (e) => {
-                  if(confirm("ডিলিট করতে চান?")) {
+                  if(confirm("Warning: Are you sure you want to permanently delete this clan?")) {
                       await deleteDoc(doc(db, "clans", e.target.getAttribute('data-id')));
                       fetchAdminClans();
                   }
@@ -193,11 +322,16 @@
           });
       }
 
+      // Add or Update Clan
       document.getElementById('submit-btn').addEventListener('click', async () => {
           const thArray = Array.from(document.querySelectorAll('.th-checkbox:checked')).map(cb => parseInt(cb.value));
           const clanName = document.getElementById('clan-name').value;
           const editId = document.getElementById('edit-clan-id').value;
-          if(thArray.length === 0 || !clanName) { alert("নাম এবং টাউন হল দিন!"); return; }
+          
+          if(thArray.length === 0 || !clanName) { 
+              alert("Validation Error: Please provide a Clan Name and select at least one Town Hall level!"); 
+              return; 
+          }
 
           const clanData = {
               name: clanName,
@@ -210,32 +344,36 @@
           };
 
           try {
-              document.getElementById('submit-btn').innerText = "Processing...";
+              document.getElementById('submit-btn').innerText = "Processing Data...";
               if(editId) {
                   await updateDoc(doc(db, "clans", editId), clanData);
-                  document.getElementById('success-msg').innerText = "সফলভাবে আপডেট হয়েছে!";
+                  document.getElementById('success-msg').innerText = "Clan data updated successfully!";
               } else {
                   await addDoc(collection(db, "clans"), clanData);
-                  document.getElementById('success-msg').innerText = "সফলভাবে অ্যাড হয়েছে!";
+                  document.getElementById('success-msg').innerText = "New clan added successfully!";
               }
               resetForm();
               fetchAdminClans();
           } catch (e) { console.error(e); }
       });
 
+      // Reset Form
       function resetForm() {
           document.getElementById('edit-clan-id').value = '';
-          document.getElementById('form-title').innerText = "নতুন ক্ল্যান অ্যাড করুন";
-          document.getElementById('submit-btn').innerText = "Add Clan";
+          document.getElementById('form-title').innerText = "Add New Clan";
+          document.getElementById('submit-btn').innerText = "Save Clan Data";
           document.getElementById('cancel-edit-btn').style.display = "none";
+          
           document.getElementById('clan-name').value = ''; document.getElementById('clan-tag').value = '';
           document.getElementById('clan-link').value = ''; document.getElementById('cwl-league').value = '';
           document.getElementById('max-members').value = ''; document.getElementById('clan-desc').value = '';
           document.querySelectorAll('.th-checkbox').forEach(cb => cb.checked = false);
+          
           setTimeout(() => document.getElementById('success-msg').innerText = '', 3000);
       }
       document.getElementById('cancel-edit-btn').addEventListener('click', resetForm);
 
+      // --- Section Reordering Functions ---
       async function loadSectionOrder(availableGroups) {
           const orderDoc = await getDoc(doc(db, "settings", "layout"));
           currentOrder = orderDoc.exists() ? orderDoc.data().order || [] : [];
@@ -245,20 +383,32 @@
       }
 
       function renderOrderList() {
-          const container = document.getElementById('sortable-sections'); container.innerHTML = '';
+          const container = document.getElementById('sortable-sections'); 
+          container.innerHTML = '';
+          if(currentOrder.length === 0) {
+              container.innerHTML = '<p style="text-align: center; color: #94a3b8; font-size: 14px;">No sections available to sort.</p>';
+              return;
+          }
           currentOrder.forEach((group, index) => {
-              const div = document.createElement('div'); div.className = 'sortable-item';
-              div.innerHTML = `<span>TH ${group}</span><div><button onclick="moveOrder(${index},-1)">⬆️</button><button onclick="moveOrder(${index},1)">⬇️</button></div>`;
+              const div = document.createElement('div'); div.className = 'sort-item';
+              div.innerHTML = `<span>Section: TH ${group}</span><div class="sort-actions"><button onclick="moveOrder(${index},-1)" ${index === 0 ? 'disabled' : ''}>▲</button><button onclick="moveOrder(${index},1)" ${index === currentOrder.length - 1 ? 'disabled' : ''}>▼</button></div>`;
               container.appendChild(div);
           });
       }
+
       window.moveOrder = (index, dir) => {
-          const temp = currentOrder[index]; currentOrder[index] = currentOrder[index + dir]; currentOrder[index + dir] = temp;
+          const temp = currentOrder[index]; 
+          currentOrder[index] = currentOrder[index + dir]; 
+          currentOrder[index + dir] = temp;
           renderOrderList();
       };
+
       document.getElementById('save-order-btn').onclick = async () => {
+          document.getElementById('save-order-btn').innerText = "Saving Layout...";
           await setDoc(doc(db, "settings", "layout"), { order: currentOrder });
-          document.getElementById('order-success-msg').innerText = "সেভ হয়েছে!";
+          document.getElementById('save-order-btn').innerText = "Update Layout Order";
+          document.getElementById('order-success-msg').innerText = "Layout order updated on live site!";
+          setTimeout(() => document.getElementById('order-success-msg').innerText = '', 3000);
       };
     </script>
 </body>
