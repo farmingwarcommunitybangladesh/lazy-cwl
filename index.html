@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FWCB - Lazy CWL Directory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <img src="logo.png" alt="FWCB Logo" class="site-logo"> 
+        <h1 class="nav-title">Lazy CWL Directory</h1>
+    </nav>
+
+    <main class="container" id="main-content">
+        <p style="text-align: center; color: #888;">Loading amazing clans...</p>
+    </main>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+      import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyC4hVhFlEBrdW7hF2EdLLTp6RiEaN-xxIA",
+        authDomain: "lazy-cwl-directory.firebaseapp.com",
+        projectId: "lazy-cwl-directory",
+        storageBucket: "lazy-cwl-directory.firebasestorage.app",
+        messagingSenderId: "587882023145",
+        appId: "1:587882023145:web:ee8ac1f673e7b0e3e98878"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      async function fetchClans() {
+        const mainContent = document.getElementById('main-content');
+        
+        try {
+            // ১. অ্যাডমিন প্যানেল থেকে সেভ করা সিরিয়াল অর্ডার নিয়ে আসা
+            let layoutOrder = [];
+            const layoutSnap = await getDoc(doc(db, "settings", "layout"));
+            if(layoutSnap.exists()) {
+                layoutOrder = layoutSnap.data().order || [];
+            }
+
+            // ২. ক্ল্যান ডেটা নিয়ে আসা
+            const querySnapshot = await getDocs(collection(db, "clans"));
+            mainContent.innerHTML = ''; 
+            
+            if(querySnapshot.empty) {
+                mainContent.innerHTML = '<p style="text-align:center; color:#fff;">No clans available right now.</p>';
+                return;
+            }
+
+            const clansData = [];
+            querySnapshot.forEach(doc => clansData.push(doc.data()));
+
+            // ৩. ডেটাগুলো টাউন হল অনুযায়ী গ্রুপ করা
+            const groups = {};
+            clansData.forEach(clan => {
+                 let thArr = Array.isArray(clan.th) ? clan.th : [clan.th];
+                 thArr.sort((a, b) => a - b);
+                 const groupKey = thArr.join(', ');
+
+                 if(!groups[groupKey]) groups[groupKey] = [];
+                 groups[groupKey].push(clan);
+            });
+
+            // ৪. গ্রুপগুলোকে সেভ করা অর্ডার অনুযায়ী সাজানো
+            const groupKeys = Object.keys(groups);
+            groupKeys.sort((a, b) => {
+                const indexA = layoutOrder.indexOf(a);
+                const indexB = layoutOrder.indexOf(b);
+
+                // যদি দুটোই লেআউটে থাকে, তাহলে সেভ করা সিরিয়াল অনুযায়ী সাজবে
+                if(indexA !== -1 && indexB !== -1) return indexA - indexB;
+                // যদি শুধু একটা লেআউটে থাকে, সেটা আগে আসবে
+                if(indexA !== -1) return -1;
+                if(indexB !== -1) return 1;
+                
+                // ডিফল্ট সাজানো
+                return a.localeCompare(b);
+            });
+
+            // ৫. প্রতিটি গ্রুপের জন্য আলাদা সেকশন তৈরি করা (অর্ডার অনুযায়ী)
+            groupKeys.forEach(key => {
+                 const section = document.createElement('div');
+                 section.innerHTML = `<h2 class="th-section-title">Town Hall ${key}</h2>`;
+                 
+                 const grid = document.createElement('div');
+                 grid.className = 'clan-grid';
+
+                 groups[key].forEach(clan => {
+                      let thArr = Array.isArray(clan.th) ? clan.th : [clan.th];
+                      let badgesHTML = '';
+                      
+                      thArr.forEach(th => {
+                          badgesHTML += `<img src="th${th}.png" alt="TH${th}" class="th-image" onerror="this.src='https://via.placeholder.com/40?text=${th}'">`;
+                      });
+
+                      const card = `
+                        <div class="clan-card">
+                            <div class="th-badges-container">
+                                ${badgesHTML}
+                            </div>
+                            <h3 class="clan-title">${clan.name}</h3>
+                            <span class="clan-tag">${clan.tag}</span>
+                            <div class="clan-info"><strong>League:</strong> ${clan.league}</div>
+                            <div class="clan-info"><strong>Members:</strong> ${clan.members}</div>
+                            ${clan.description ? `<p class="clan-desc">${clan.description}</p>` : ''}
+                            <a href="${clan.link}" target="_blank" class="join-btn">Join Clan</a>
+                        </div>
+                      `;
+                      grid.innerHTML += card;
+                 });
+
+                 section.appendChild(grid);
+                 mainContent.appendChild(section);
+            });
+
+        } catch (error) {
+            console.error("Error: ", error);
+            mainContent.innerHTML = "<p style='color:red;'>Error loading data!</p>";
+        }
+      }
+
+      fetchClans();
+    </script>
+</body>
+</html>
