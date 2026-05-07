@@ -11,10 +11,13 @@
 }
 
 body {
-    background-color: #0d0d12; /* ডার্ক গেমিং ব্যাকগ্রাউন্ড */
+    background-color: #0d0d12; 
     color: #e0e0e0;
     line-height: 1.6;
-    overflow-x: hidden; /* মোবাইলে ডানে-বামে স্ক্রল হওয়া বন্ধ করবে */
+    overflow-x: hidden; 
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* ফুটার সবসময় নিচে রাখার জন্য */
 }
 
 /* =========================================
@@ -55,18 +58,19 @@ body {
 }
 
 /* =========================================
-   3. Layout & Grid System (Mobile Fix)
+   3. Layout & Grid System
 ========================================= */
 .container {
     padding: 40px 5%;
     max-width: 1400px;
     margin: 0 auto;
     width: 100%;
+    flex: 1; /* ফুটার নিচে ঠেলে দেওয়ার জন্য */
 }
 
 .th-section-title {
     font-size: 26px;
-    color: #f1c40f; /* গোল্ডেন কালার */
+    color: #f1c40f; 
     margin-bottom: 25px;
     border-bottom: 2px solid #2a2a35;
     padding-bottom: 10px;
@@ -78,7 +82,6 @@ body {
 
 .clan-grid {
     display: grid;
-    /* এই লাইনটি ম্যাজিকের মত কাজ করে, বক্স কখনো স্ক্রিনের বাইরে যাবে না */
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 25px;
     margin-bottom: 50px;
@@ -86,7 +89,7 @@ body {
 }
 
 /* =========================================
-   4. Clan Card Design & Animations
+   4. Clan Card Design
 ========================================= */
 .clan-card {
     background: linear-gradient(145deg, #1a1a24, #12121a);
@@ -98,7 +101,7 @@ body {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
     width: 100%;
     display: flex;
-    flex-direction: column; /* বাটন সবসময় নিচে রাখার জন্য */
+    flex-direction: column; 
 }
 
 .clan-card:hover {
@@ -107,9 +110,6 @@ body {
     box-shadow: 0 15px 30px rgba(231, 76, 60, 0.3);
 }
 
-/* =========================================
-   5. Town Hall Badges (Multiple Images)
-========================================= */
 .th-badges-container {
     position: absolute;
     top: 15px;
@@ -121,7 +121,7 @@ body {
     padding: 5px;
     border-radius: 8px;
     border: 1px solid #333;
-    max-width: 120px; /* বেশি ছবি হলে যেন টাইটেলের উপর না চলে আসে */
+    max-width: 120px; 
     justify-content: flex-end;
 }
 
@@ -131,16 +131,13 @@ body {
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
-/* =========================================
-   6. Card Typography
-========================================= */
 .clan-title {
     font-size: 22px;
     color: #fff;
     margin-bottom: 5px;
-    padding-right: 90px; /* TH ছবির জন্য জায়গা রাখা */
+    padding-right: 90px; 
     line-height: 1.2;
-    word-wrap: break-word; /* বড় নাম ভেঙে নিচে আসবে */
+    word-wrap: break-word; 
 }
 
 .clan-tag {
@@ -164,19 +161,24 @@ body {
     color: #fff;
 }
 
+/* =========================================
+   5. Highlighted Description Box (Red)
+========================================= */
 .clan-desc {
+    background-color: #e74c3c; /* সম্পূর্ণ লাল ব্যাকগ্রাউন্ড */
+    color: #ffffff; /* সাদা টেক্সট */
     font-size: 13px;
-    color: #bbb;
+    font-weight: 600;
     margin: 15px 0;
-    font-style: italic;
-    border-left: 3px solid #e74c3c;
-    padding-left: 10px;
-    flex-grow: 1; /* ডেসক্রিপশন ছোট হলেও বাটন নিচে থাকবে */
+    padding: 10px 12px;
+    border-radius: 6px;
+    text-align: center;
     word-wrap: break-word;
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
 }
 
 /* =========================================
-   7. Join Button
+   6. Join Button
 ========================================= */
 .join-btn {
     display: block;
@@ -189,7 +191,7 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: 20px;
+    margin-top: auto; /* বাটন সবসময় নিচে রাখবে */
     transition: 0.3s;
     box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
 }
@@ -201,35 +203,58 @@ body {
 }
 
 /* =========================================
-   8. Mobile Responsive Fixes
+   7. Footer Section
+========================================= */
+.site-footer {
+    background: #12121a;
+    border-top: 1px solid #2a2a35;
+    padding: 40px 20px;
+    text-align: center;
+    margin-top: 40px;
+}
+
+.footer-text {
+    color: #a0a0b0;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.fb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #1877F2;
+    color: #ffffff;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3);
+}
+
+.fb-btn:hover {
+    background-color: #166fe5;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(24, 119, 242, 0.5);
+}
+
+.fb-icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+/* =========================================
+   8. Mobile Responsive
 ========================================= */
 @media (max-width: 600px) {
-    .container {
-        padding: 20px 15px;
-    }
-    
-    .navbar {
-        flex-direction: column;
-        gap: 10px;
-        padding: 15px;
-    }
-
-    .nav-title {
-        font-size: 20px;
-        text-align: center;
-    }
-
-    /* মোবাইলে গ্রিড ১ কলামের হবে এবং বক্স বাইরে যাবে না */
-    .clan-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .clan-card {
-        padding: 20px;
-    }
-    
-    .th-section-title {
-        font-size: 22px;
-    }
+    .container { padding: 20px 15px; }
+    .navbar { flex-direction: column; gap: 10px; padding: 15px; }
+    .nav-title { font-size: 20px; text-align: center; }
+    .clan-grid { grid-template-columns: 1fr; gap: 20px; }
+    .clan-card { padding: 20px; }
+    .th-section-title { font-size: 22px; }
 }
